@@ -181,7 +181,35 @@ MATHI OS
 </button>
 
 </div>
+<!-- Notes Window -->
 
+<div id="notesWindow" class="window hidden">
+
+    <div class="window-header">
+
+        <span>📝 Notes</span>
+
+        <button onclick="closeWindow('notesWindow')">
+
+            ✖
+
+        </button>
+
+    </div>
+
+    <textarea
+        id="notesText"
+        placeholder="Write your notes here..."></textarea>
+
+    <button
+        class="save-btn"
+        onclick="saveNotes()">
+
+        Save Notes
+
+    </button>
+
+</div>
 </div>
 
 <script src="script.js"></script>
