@@ -378,3 +378,28 @@ color:white;
 transform:translateX(8px);
 
 }
+/* Camera */
+
+.camera-body{
+
+padding:20px;
+
+background:white;
+
+text-align:center;
+
+}
+
+#camera{
+
+width:100%;
+
+height:320px;
+
+background:black;
+
+border-radius:10px;
+
+object-fit:cover;
+
+}
