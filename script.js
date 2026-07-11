@@ -155,3 +155,60 @@ function logout(){
     location.reload();
 
 }
+// ---------------------
+// NOTES
+// ---------------------
+
+function openWindow(name){
+
+document
+.getElementById(name)
+.classList.remove("hidden");
+
+}
+
+function closeWindow(name){
+
+document
+.getElementById(name)
+.classList.add("hidden");
+
+}
+
+function saveNotes(){
+
+const note=
+
+document
+.getElementById("notesText")
+.value;
+
+localStorage.setItem(
+"mathi_notes",
+note
+);
+
+alert("Notes Saved 💜");
+
+}
+
+window.addEventListener(
+"load",
+
+()=>{
+
+const saved=
+
+localStorage.getItem(
+"mathi_notes"
+);
+
+if(saved){
+
+document
+.getElementById("notesText")
+.value=saved;
+
+}
+
+});
