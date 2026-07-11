@@ -183,3 +183,65 @@ document
 }
 
 });
+// ======================
+// CAMERA
+// ======================
+
+let stream;
+
+async function openCamera(){
+
+    openWindow("cameraWindow");
+
+    try{
+
+        stream = await navigator.mediaDevices.getUserMedia({
+
+            video:true
+
+        });
+
+        document.getElementById("camera").srcObject = stream;
+
+    }
+
+    catch(err){
+
+        alert("Camera permission denied!");
+
+    }
+
+}
+
+function capturePhoto(){
+
+    const video =
+    document.getElementById("camera");
+
+    const canvas =
+    document.getElementById("canvas");
+
+    canvas.width = video.videoWidth;
+
+    canvas.height = video.videoHeight;
+
+    canvas
+    .getContext("2d")
+    .drawImage(
+        video,
+        0,
+        0
+    );
+
+    const a =
+    document.createElement("a");
+
+    a.href =
+    canvas.toDataURL("image/png");
+
+    a.download =
+    "mathi_photo.png";
+
+    a.click();
+
+}
