@@ -114,35 +114,6 @@ document.addEventListener(
 );
 
 // ==============================
-// Desktop Apps
-// ==============================
-
-const apps =
-document.querySelectorAll(".icon");
-
-apps.forEach((app)=>{
-
-    app.addEventListener(
-
-        "click",
-
-        ()=>{
-
-            alert(
-
-                app.innerText +
-
-                "\n\nComing in MATHI OS v3.2 🚀"
-
-            );
-
-        }
-
-    );
-
-});
-
-// ==============================
 // Logout
 // ==============================
 
