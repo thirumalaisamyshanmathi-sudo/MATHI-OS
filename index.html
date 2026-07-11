@@ -236,6 +236,42 @@ MATHI OS
 
     </div>
 
+</div>
+<!-- Camera Window -->
+
+<div id="cameraWindow" class="window hidden">
+
+    <div class="window-header">
+
+        <span>📷 Camera</span>
+
+        <button onclick="closeWindow('cameraWindow')">✖</button>
+
+    </div>
+
+    <div class="camera-body">
+
+        <video
+            id="camera"
+            autoplay
+            playsinline>
+        </video>
+
+        <canvas
+            id="canvas"
+            style="display:none;">
+        </canvas>
+
+        <button
+            class="save-btn"
+            onclick="capturePhoto()">
+
+            📸 Capture Photo
+
+        </button>
+
+    </div>
+
 </div>    
 </div>
 
