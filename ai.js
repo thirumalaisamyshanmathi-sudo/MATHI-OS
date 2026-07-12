@@ -219,3 +219,62 @@ newChat.onclick=()=>{
     createNewChat();
 
 };
+// ======================================
+// PART 3
+// Send Message + Save Conversation
+// ======================================
+
+function sendMessage(){
+
+    const text=input.value.trim();
+
+    if(text==="") return;
+
+    const chat=getCurrentChat();
+
+    if(!chat) return;
+
+    // Auto title from first message
+    if(chat.messages.length===0){
+
+        chat.title=text.substring(0,30);
+
+        renderSidebar();
+
+    }
+
+    // User message
+
+    chat.messages.push({
+
+        role:"user",
+
+        text:text
+
+    });
+
+    input.value="";
+
+    saveChats();
+
+    loadConversation(currentChat);
+
+    setTimeout(()=>{
+
+        const reply=getReply(text);
+
+        chat.messages.push({
+
+            role:"ai",
+
+            text:reply
+
+        });
+
+        saveChats();
+
+        loadConversation(currentChat);
+
+    },500);
+
+}
