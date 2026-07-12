@@ -245,3 +245,78 @@ function capturePhoto(){
     a.click();
 
 }
+// ================= AI CHAT =================
+
+function openAI() {
+    openWindow("aiWindow");
+}
+
+function sendMessage() {
+
+    const input = document.getElementById("userInput");
+    const chat = document.getElementById("chatArea");
+
+    if (input.value.trim() === "") return;
+
+    // User Message
+    const userMsg = document.createElement("div");
+    userMsg.className = "user-message";
+    userMsg.innerText = input.value;
+    chat.appendChild(userMsg);
+
+    const message = input.value.toLowerCase();
+
+    input.value = "";
+
+    chat.scrollTop = chat.scrollHeight;
+
+    // AI Reply
+    setTimeout(() => {
+
+        const aiMsg = document.createElement("div");
+        aiMsg.className = "ai-message";
+
+        if(message.includes("hi") || message.includes("hello")){
+            aiMsg.innerText = "👋 Hello Shanmathi! How can I help you today?";
+        }
+        else if(message.includes("name")){
+            aiMsg.innerText = "🤖 My name is MATHI AI.";
+        }
+        else if(message.includes("time")){
+            aiMsg.innerText = "🕒 " + new Date().toLocaleTimeString();
+        }
+        else if(message.includes("date")){
+            aiMsg.innerText = "📅 " + new Date().toLocaleDateString();
+        }
+        else{
+            aiMsg.innerText = "🤖 Sorry! Offline AI is running. Real AI support will be added soon.";
+        }
+
+        chat.appendChild(aiMsg);
+
+        chat.scrollTop = chat.scrollHeight;
+
+    },500);
+
+}
+
+// Press Enter
+document.addEventListener("DOMContentLoaded",()=>{
+
+    const input=document.getElementById("userInput");
+
+    if(input){
+
+        input.addEventListener("keypress",(e)=>{
+
+            if(e.key==="Enter"){
+
+                sendMessage();
+
+            }
+
+        });
+
+    }
+
+});
