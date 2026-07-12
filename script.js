@@ -1,322 +1,170 @@
-// ==============================
-// MATHI OS v3.1 Script
-// ==============================
+/* ======================================
+   MATHI OS v2.0
+   SCRIPT.JS - PART 1
+====================================== */
 
-const PASSWORD = "Sabarishanmathi";
+// Boot Screen
 
-// Auto Login
-window.onload = () => {
+window.addEventListener("load",()=>{
 
-    if (localStorage.getItem("mathi_login") === "true") {
+    setTimeout(()=>{
 
-        document.getElementById("loginScreen").classList.add("hidden");
-        document.getElementById("desktop").classList.remove("hidden");
+        document.getElementById("bootScreen").classList.add("hidden");
 
-    }
+        document.getElementById("app").classList.remove("hidden");
 
-    updateClock();
+    },3000);
 
-    setInterval(updateClock, 1000);
+});
 
-}
+// Elements
 
-// ==============================
-// LOGIN
-// ==============================
+const chatBox=document.getElementById("chatBox");
 
-function login() {
+const input=document.getElementById("messageInput");
 
-    const password =
-        document.getElementById("password").value;
+const sendBtn=document.getElementById("sendBtn");
 
-    const error =
-        document.getElementById("error");
+const newChatBtn=document.getElementById("newChat");
 
-    if (password === PASSWORD) {
+const history=document.getElementById("chatHistory");
 
-        document.getElementById("loginScreen")
-            .classList.add("hidden");
+const emojiBtn=document.getElementById("emojiBtn");
 
-        document.getElementById("desktop")
-            .classList.remove("hidden");
+const emojiPanel=document.getElementById("emojiPanel");
 
-        localStorage.setItem(
-            "mathi_login",
-            "true"
-        );
+const settingsPanel=document.getElementById("settingsPanel");
 
-    } else {
+const themeSelect=document.getElementById("themeSelect");
 
-        error.innerHTML =
-            "Wrong Password ❌";
+const toast=document.getElementById("toast");
 
-    }
+// Storage
 
-}
+let conversations=
 
-// ==============================
-// CLOCK
-// ==============================
+JSON.parse(
 
-function updateClock() {
+localStorage.getItem("mathi_conversations")
 
-    const now = new Date();
+)||[];
 
-    const time =
-        now.toLocaleTimeString(
-            [],
-            {
-                hour: "2-digit",
-                minute: "2-digit"
-            }
-        );
+let activeChat=0;
 
-    document.getElementById("clock")
-        .innerHTML = time;
+// First Chat
+
+if(conversations.length===0){
+
+conversations.push({
+
+title:"New Chat",
+
+messages:[]
+
+});
+
+saveChats();
 
 }
 
-// ==============================
-// START MENU
-// ==============================
+loadSidebar();
 
-const startBtn =
-    document.getElementById("startBtn");
+openConversation(0);
 
-const startMenu =
-    document.getElementById("startMenu");
+// ==========================
+// Send Message
+// ==========================
 
-startBtn.onclick = () => {
+sendBtn.addEventListener("click",sendMessage);
 
-    startMenu.classList.toggle("hidden");
+input.addEventListener("keydown",e=>{
 
-}
+if(e.key==="Enter"){
 
-// Close Menu
-
-document.addEventListener(
-    "click",
-    function(e){
-
-        if(
-            !startBtn.contains(e.target)
-            &&
-            !startMenu.contains(e.target)
-        ){
-
-            startMenu.classList.add(
-                "hidden"
-            );
-
-        }
-
-    }
-);
-
-// ==============================
-// Logout
-// ==============================
-
-function logout(){
-
-    localStorage.removeItem(
-        "mathi_login"
-    );
-
-    location.reload();
-
-}
-// ---------------------
-// NOTES
-// ---------------------
-
-function openWindow(name){
-
-document
-.getElementById(name)
-.classList.remove("hidden");
-
-}
-
-function closeWindow(name){
-
-document
-.getElementById(name)
-.classList.add("hidden");
-
-}
-
-function saveNotes(){
-
-const note=
-
-document
-.getElementById("notesText")
-.value;
-
-localStorage.setItem(
-"mathi_notes",
-note
-);
-
-alert("Notes Saved 💜");
-
-}
-
-window.addEventListener(
-"load",
-
-()=>{
-
-const saved=
-
-localStorage.getItem(
-"mathi_notes"
-);
-
-if(saved){
-
-document
-.getElementById("notesText")
-.value=saved;
+sendMessage();
 
 }
 
 });
-// ======================
-// CAMERA
-// ======================
 
-let stream;
+function sendMessage(){
 
-async function openCamera(){
+const text=input.value.trim();
 
-    openWindow("cameraWindow");
+if(text==="") return;
 
-    try{
+const user={
 
-        stream = await navigator.mediaDevices.getUserMedia({
+role:"user",
 
-            video:true
+text:text
 
-        });
+};
 
-        document.getElementById("camera").srcObject = stream;
+conversations[activeChat].messages.push(user);
 
-    }
+addMessage(user);
 
-    catch(err){
+input.value="";
 
-        alert("Camera permission denied!");
+if(conversations[activeChat].messages.length===1){
 
-    }
+conversations[activeChat].title=
 
-}
+text.substring(0,30);
 
-function capturePhoto(){
-
-    const video =
-    document.getElementById("camera");
-
-    const canvas =
-    document.getElementById("canvas");
-
-    canvas.width = video.videoWidth;
-
-    canvas.height = video.videoHeight;
-
-    canvas
-    .getContext("2d")
-    .drawImage(
-        video,
-        0,
-        0
-    );
-
-    const a =
-    document.createElement("a");
-
-    a.href =
-    canvas.toDataURL("image/png");
-
-    a.download =
-    "mathi_photo.png";
-
-    a.click();
-
-}
-// ================= AI CHAT =================
-
-function openAI() {
-    openWindow("aiWindow");
-}
-
-function sendMessage() {
-
-    const input = document.getElementById("userInput");
-    const chat = document.getElementById("chatArea");
-
-    if (input.value.trim() === "") return;
-
-    // User Message
-    const userMsg = document.createElement("div");
-    userMsg.className = "user-message";
-    userMsg.innerText = input.value;
-    chat.appendChild(userMsg);
-
-    const message = input.value.toLowerCase();
-
-    input.value = "";
-
-    chat.scrollTop = chat.scrollHeight;
-
-    // AI Reply
-    setTimeout(() => {
-
-        const aiMsg = document.createElement("div");
-        aiMsg.className = "ai-message";
-
-        if(message.includes("hi") || message.includes("hello")){
-            aiMsg.innerText = "👋 Hello Shanmathi! How can I help you today?";
-        }
-        else if(message.includes("name")){
-            aiMsg.innerText = "🤖 My name is MATHI AI.";
-        }
-        else if(message.includes("time")){
-            aiMsg.innerText = "🕒 " + new Date().toLocaleTimeString();
-        }
-        else if(message.includes("date")){
-            aiMsg.innerText = "📅 " + new Date().toLocaleDateString();
-        }
-        else{
-            aiMsg.innerText = "🤖 Sorry! Offline AI is running. Real AI support will be added soon.";
-        }
-
-        chat.appendChild(aiMsg);
-
-        chat.scrollTop = chat.scrollHeight;
-
-    },500);
+loadSidebar();
 
 }
 
-// Press Enter
-document.addEventListener("DOMContentLoaded",()=>{
+setTimeout(()=>{
 
-    const input=document.getElementById("userInput");
+const ai={
 
-    if(input){
+role:"ai",
 
-        input.addEventListener("keypress",(e)=>{
+text:getReply(text)
 
-            if(e.key==="Enter"){
+};
 
-                sendMessage();
+conversations[activeChat].messages.push(ai);
 
-            }
+addMessage(ai);
 
-        });
+saveChats();
 
-    }
+},600);
 
-});
+saveChats();
+
+}
+
+// ==========================
+// Add Message
+// ==========================
+
+function addMessage(msg){
+
+const div=document.createElement("div");
+
+div.className=
+
+msg.role==="user"
+
+?
+
+"user-message"
+
+:
+
+"ai-message";
+
+div.innerText=msg.text;
+
+chatBox.appendChild(div);
+
+chatBox.scrollTop=
+
+chatBox.scrollHeight;
+
+}
