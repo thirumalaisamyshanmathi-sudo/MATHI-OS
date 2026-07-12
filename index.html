@@ -211,3 +211,147 @@ id="sendBtn"
 </button>
 
 </div>
+<!-- Hidden File Picker -->
+
+<input
+type="file"
+id="fileInput"
+hidden
+multiple
+>
+
+<!-- Hidden Image Picker -->
+
+<input
+type="file"
+id="imageInput"
+accept="image/*"
+hidden
+multiple
+>
+
+<!-- Hidden Camera -->
+
+<input
+type="file"
+id="cameraInput"
+accept="image/*"
+capture="environment"
+hidden
+>
+
+</div>
+
+<!-- ========================= -->
+<!-- Emoji Panel -->
+<!-- ========================= -->
+
+<div id="emojiPanel" class="emoji-panel hidden">
+
+😀 😁 😂 🤣 😊 😍 🥰 😎 🤖 💜 ❤️ 👍 👏 🎉 🔥 🚀 🌙 ⭐
+
+</div>
+
+<!-- ========================= -->
+<!-- Settings Panel -->
+<!-- ========================= -->
+
+<div id="settingsPanel" class="settings-panel hidden">
+
+<h2>
+
+⚙️ Settings
+
+</h2>
+
+<div class="setting-item">
+
+<label>
+
+Theme
+
+</label>
+
+<select id="themeSelect">
+
+<option value="purple">
+
+Purple Aurora
+
+</option>
+
+<option value="blue">
+
+Blue Ocean
+
+</option>
+
+<option value="light">
+
+Light Glass
+
+</option>
+
+</select>
+
+</div>
+
+<div class="setting-item">
+
+<label>
+
+Wallpaper
+
+</label>
+
+<button id="changeWallpaper">
+
+Change Wallpaper
+
+</button>
+
+</div>
+
+<div class="setting-item">
+
+<label>
+
+Username
+
+</label>
+
+<input
+type="text"
+id="username"
+placeholder="Shanmathi">
+
+</div>
+
+<button id="saveSettings">
+
+Save
+
+</button>
+
+</div>
+
+<!-- ========================= -->
+<!-- Notification -->
+<!-- ========================= -->
+
+<div
+id="toast"
+class="toast hidden"
+>
+
+Saved Successfully
+
+</div>
+
+</div>
+
+<script src="script.js"></script>
+
+</body>
+
+</html>
