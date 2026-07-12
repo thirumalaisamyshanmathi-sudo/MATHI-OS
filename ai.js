@@ -36,7 +36,65 @@ if(conversations.length===0){
     loadConversation(currentChat);
 
 }
+// ===============================
+// Create New Chat
+// ===============================
 
+function createNewChat(){
+
+    const chat={
+
+        id:Date.now(),
+
+        title:"New Chat",
+
+        messages:[]
+
+    };
+
+    conversations.unshift(chat);
+
+    currentChat=chat.id;
+
+    saveChats();
+
+    renderSidebar();
+
+    loadConversation(currentChat);
+
+}
+// ===============================
+// Save
+// ===============================
+
+function saveChats(){
+
+localStorage.setItem(
+
+"mathi_ai_v3",
+
+JSON.stringify(
+
+conversations
+
+)
+
+);
+
+}
+// ===============================
+// Find Chat
+// ===============================
+
+function getCurrentChat(){
+
+return conversations.find(
+
+c=>c.id===currentChat
+
+);
+
+}
 // ----------------------------
 // Load History
 // ----------------------------
