@@ -274,7 +274,40 @@ MATHI OS
 
 </div>    
 </div>
+<!-- ================= AI CHAT ================= -->
 
+<div id="aiWindow" class="window hidden">
+
+    <div class="window-header">
+        <span>🤖 MATHI AI</span>
+        <button onclick="closeWindow('aiWindow')">✖</button>
+    </div>
+
+    <div id="chatArea" class="chat-area">
+
+        <div class="ai-message">
+            👋 Hello Shanmathi! Welcome to MATHI AI.
+        </div>
+
+    </div>
+
+    <div class="chat-input">
+
+        <input
+            type="text"
+            id="userInput"
+            placeholder="Type your message..."
+        >
+
+        <button onclick="sendMessage()">
+            Send
+        </button>
+
+    </div>
+
+</div>
+
+<!-- ================= END AI CHAT ================= -->
 <script src="script.js"></script>
 
 </body>
