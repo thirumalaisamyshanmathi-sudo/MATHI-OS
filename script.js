@@ -248,7 +248,7 @@ function capturePhoto(){
 // ================= AI CHAT =================
 
 function openAI() {
-    window.location.href = "ai.html";
+    openWindow("aiWindow");
 }
 
 function sendMessage() {
