@@ -69,6 +69,13 @@ messages:[]
 
 }
 
+function saveChats() {
+    localStorage.setItem(
+        "mathi_conversations",
+        JSON.stringify(conversations)
+    );
+}
+
 loadSidebar();
 
 openConversation(0);
