@@ -30,7 +30,10 @@ const newChatBtn=document.getElementById("newChat");
 const history=document.getElementById("chatHistory");
 
 const emojiBtn=document.getElementById("emojiBtn");
+console.log("Emoji Button:", emojiBtn);
+console.log("Emoji Panel:", emojiPanel);
 
+emojiBtn.style.background = "red";
 const emojiPanel=document.getElementById("emojiPanel");
 
 const settingsPanel=document.getElementById("settingsPanel");
