@@ -39,6 +39,8 @@ const themeSelect=document.getElementById("themeSelect");
 
 const toast=document.getElementById("toast");
 
+alert("Script Loaded");
+
 // Storage
 
 let conversations=
