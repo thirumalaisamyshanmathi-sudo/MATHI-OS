@@ -71,6 +71,18 @@ loadSidebar();
 
 openConversation(0);
 
+emojiBtn.addEventListener("click", () => {
+    emojiPanel.classList.toggle("hidden");
+});
+
+emojiPanel.querySelectorAll("span").forEach((emoji) => {
+    emoji.addEventListener("click", () => {
+        input.value += emoji.textContent;
+        input.focus();
+        emojiPanel.classList.add("hidden");
+    });
+});
+
 // ==========================
 // Send Message
 // ==========================
@@ -168,13 +180,3 @@ chatBox.scrollTop=
 chatBox.scrollHeight;
 
 }
-emojiBtn.addEventListener("click", () => {
-    emojiPanel.classList.toggle("hidden");
-});
-
-document.querySelectorAll("#emojiPanel span").forEach(emoji => {
-    emoji.addEventListener("click", () => {
-        messageInput.value += emoji.textContent;
-        messageInput.focus();
-    });
-});
