@@ -31,6 +31,12 @@ const history=document.getElementById("chatHistory");
 
 const emojiBtn=document.getElementById("emojiBtn");
 
+const attachBtn = document.getElementById("attachBtn");
+
+const fileInput = document.getElementById("fileInput");
+
+const filePreview = document.getElementById("filePreview");
+
 const emojiPanel=document.getElementById("emojiPanel");
 
 const settingsPanel=document.getElementById("settingsPanel");
