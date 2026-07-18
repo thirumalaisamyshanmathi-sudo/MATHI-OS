@@ -168,3 +168,13 @@ chatBox.scrollTop=
 chatBox.scrollHeight;
 
 }
+emojiBtn.addEventListener("click", () => {
+    emojiPanel.classList.toggle("hidden");
+});
+
+document.querySelectorAll("#emojiPanel span").forEach(emoji => {
+    emoji.addEventListener("click", () => {
+        messageInput.value += emoji.textContent;
+        messageInput.focus();
+    });
+});
