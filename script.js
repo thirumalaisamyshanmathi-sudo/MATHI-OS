@@ -106,6 +106,33 @@ emojiPanel.addEventListener("click", (e) => {
 });
 
 // ==========================
+// File Attachment
+// ==========================
+
+attachBtn.addEventListener("click", () => {
+    fileInput.click();
+});
+
+fileInput.addEventListener("change", () => {
+
+    if (fileInput.files.length === 0) return;
+
+    const file = fileInput.files[0];
+
+    filePreview.classList.remove("hidden");
+
+    filePreview.innerHTML = `
+        <i class="fa-solid fa-file"></i>
+        <div>
+            <b>${file.name}</b>
+            <br>
+            <small>${(file.size / 1024).toFixed(2)} KB</small>
+        </div>
+    `;
+
+});
+
+// ==========================
 // Send Message
 // ==========================
 
