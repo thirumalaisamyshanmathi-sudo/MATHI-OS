@@ -84,12 +84,18 @@ emojiBtn.addEventListener("click", () => {
     emojiPanel.classList.toggle("hidden");
 });
 
-emojiPanel.querySelectorAll("span").forEach((emoji) => {
-    emoji.addEventListener("click", () => {
-        input.value += emoji.textContent;
+emojiPanel.addEventListener("click", (e) => {
+
+    if (e.target.tagName === "SPAN") {
+
+        input.value += e.target.textContent;
+
         input.focus();
+
         emojiPanel.classList.add("hidden");
-    });
+
+    }
+
 });
 
 // ==========================
