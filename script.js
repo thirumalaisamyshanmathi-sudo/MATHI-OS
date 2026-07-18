@@ -84,6 +84,7 @@ emojiBtn.addEventListener("click", () => {
     emojiPanel.classList.toggle("hidden");
 });
 
+emojiPanel.querySelectorAll("span")
 emojiPanel.addEventListener("click", (e) => {
 
     if (e.target.tagName === "SPAN") {
