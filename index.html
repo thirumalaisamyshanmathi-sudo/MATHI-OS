@@ -1,1 +1,968 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<title>MATHI OS</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Noto+Sans+Tamil:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#130F1E;
+  --panel:#1C1630;
+  --panel-2:#241C3D;
+  --line:#372A57;
+  --brass:#9B7EDE;
+  --amber:#C9AEFA;
+  --amber-dim:#6B4FA0;
+  --rust:#A24FC7;
+  --text:#EAE3F7;
+  --muted:#9C8DBD;
+  --muted-2:#5C4E78;
+  --danger:#c0503f;
+  --good:#7a9a6a;
+  --radius:10px;
+  --font-display:'Fraunces', serif;
+  --font-body:'Inter', 'Noto Sans Tamil', sans-serif;
+  --font-mono:'JetBrains Mono', monospace;
+}
+*{box-sizing:border-box;}
+html,body{height:100%;}
+body{
+  margin:0;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(155,126,222,0.13), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 10%, rgba(162,79,199,0.09), transparent 55%),
+    var(--bg);
+  color:var(--text);
+  font-family:var(--font-body);
+  overflow:hidden;
+}
+::-webkit-scrollbar{width:8px;height:8px;}
+::-webkit-scrollbar-thumb{background:var(--line);border-radius:8px;}
+::-webkit-scrollbar-track{background:transparent;}
 
+/* ---------- BOOT SCREEN ---------- */
+#boot{
+  position:fixed;inset:0;z-index:999;
+  background:var(--bg);
+  display:flex;align-items:center;justify-content:center;flex-direction:column;
+  font-family:var(--font-mono);color:var(--amber);
+  transition:opacity .6s ease;
+}
+#boot .mark{
+  font-family:var(--font-display);font-size:52px;letter-spacing:2px;color:var(--amber);
+  font-weight:600;margin-bottom:6px;
+}
+#boot .sub{color:var(--muted);font-size:12px;letter-spacing:4px;text-transform:uppercase;margin-bottom:28px;}
+#boot .line{font-size:12px;color:var(--muted-2);opacity:0;animation:fadeIn .4s forwards;white-space:pre;}
+#boot .line:nth-child(1){animation-delay:.1s}
+#bootlines .line:nth-child(2){animation-delay:.4s}
+#boot .bar{width:280px;height:2px;background:var(--line);margin-top:22px;overflow:hidden;border-radius:2px;}
+#boot .bar i{display:block;height:100%;width:0%;background:linear-gradient(90deg,var(--rust),var(--amber));animation:load 1.7s ease forwards;}
+@keyframes load{to{width:100%}}
+@keyframes fadeIn{to{opacity:1}}
+
+/* ---------- LOCK SCREEN ---------- */
+#lock-screen{
+  position:fixed;inset:0;z-index:998;
+  background:
+    radial-gradient(ellipse 900px 500px at 15% -10%, rgba(155,126,222,0.13), transparent 60%),
+    radial-gradient(ellipse 700px 500px at 100% 10%, rgba(162,79,199,0.09), transparent 55%),
+    var(--bg);
+  display:none;align-items:center;justify-content:center;
+}
+#lock-screen.show{display:flex;}
+.lock-box{
+  width:300px;max-width:88vw;text-align:center;
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:32px 26px;
+}
+.lock-glyph{
+  width:48px;height:48px;margin:0 auto 14px;border-radius:12px;
+  background:linear-gradient(135deg,var(--rust),var(--brass));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:20px;color:#1A1430;
+}
+.lock-box h2{font-family:var(--font-display);font-size:19px;margin:0 0 6px;color:var(--text);}
+.lock-sub{color:var(--muted);font-size:12.5px;margin:0 0 18px;}
+.lock-box input{
+  width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+  padding:11px 12px;color:var(--text);font-family:var(--font-mono);font-size:16px;
+  text-align:center;letter-spacing:3px;outline:none;
+}
+.lock-box input:focus{border-color:var(--brass);}
+.lock-error{color:var(--danger);font-size:12px;margin:10px 0 0;min-height:14px;}
+.lock-box.shake{animation:shake .35s;}
+@keyframes shake{
+  0%,100%{transform:translateX(0);}
+  20%,60%{transform:translateX(-8px);}
+  40%,80%{transform:translateX(8px);}
+}
+
+/* ---------- APP SHELL ---------- */
+#app{display:none;height:100vh;grid-template-columns:260px 1fr;}
+#app.ready{display:grid;}
+
+/* TOPBAR (spans full width via sidebar+main) */
+.topbar{
+  grid-column:1/-1;
+  height:44px;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 14px;
+  background:var(--panel);
+  border-bottom:1px solid var(--line);
+  font-family:var(--font-mono);font-size:11px;color:var(--muted);
+  letter-spacing:.5px;
+}
+.topbar .brand{display:flex;align-items:center;gap:8px;color:var(--amber);font-weight:600;}
+.topbar .dot{width:6px;height:6px;border-radius:50%;background:var(--good);box-shadow:0 0 6px var(--good);}
+.topbar .right{display:flex;align-items:center;gap:14px;}
+#clock{color:var(--muted);}
+
+.shell-body{display:contents;}
+
+/* SIDEBAR */
+#sidebar{
+  background:var(--panel);
+  border-right:1px solid var(--line);
+  display:flex;flex-direction:column;
+  padding:14px 12px;
+  overflow-y:auto;
+}
+.new-chat-btn{
+  display:flex;align-items:center;gap:8px;
+  background:linear-gradient(180deg, #2A2050, #1E1738);
+  border:1px solid var(--line);
+  color:var(--amber);
+  padding:10px 12px;border-radius:var(--radius);
+  cursor:pointer;font-family:var(--font-body);font-weight:600;font-size:13px;
+  margin-bottom:16px;transition:.15s;
+}
+.new-chat-btn:hover{border-color:var(--brass);background:#2C2260;}
+.sidebar-label{font-family:var(--font-mono);font-size:10px;letter-spacing:1.5px;text-transform:uppercase;color:var(--muted-2);margin:10px 4px 6px;}
+.chat-item{
+  padding:9px 10px;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  display:flex;align-items:center;justify-content:space-between;gap:6px;
+  margin-bottom:2px;
+}
+.chat-item:hover{background:var(--panel-2);color:var(--text);}
+.chat-item.active{background:#2A2050;color:var(--amber);border:1px solid var(--line);}
+.chat-item .del{opacity:0;font-size:12px;color:var(--muted-2);}
+.chat-item:hover .del{opacity:1;}
+.chat-item .del:hover{color:var(--danger);}
+.sidebar-bottom{margin-top:auto;padding-top:10px;border-top:1px solid var(--line);}
+.side-btn{
+  display:flex;align-items:center;gap:8px;width:100%;
+  background:transparent;border:none;color:var(--muted);
+  padding:9px 8px;border-radius:8px;cursor:pointer;font-size:13px;font-family:var(--font-body);
+  text-align:left;
+}
+.side-btn:hover{background:var(--panel-2);color:var(--text);}
+
+/* MAIN */
+#main{display:flex;flex-direction:column;height:100%;overflow:hidden;background:var(--bg);}
+#messages{flex:1;overflow-y:auto;padding:26px 0;}
+.msg-wrap{max-width:760px;margin:0 auto;padding:0 24px 22px;}
+.msg{display:flex;gap:12px;align-items:flex-start;}
+.msg .avatar{
+  width:28px;height:28px;border-radius:6px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:13px;margin-top:2px;
+}
+.msg.user .avatar{background:var(--panel-2);color:var(--muted);border:1px solid var(--line);}
+.msg.ai .avatar{background:linear-gradient(135deg,var(--rust),var(--brass));color:#1A1430;}
+.msg .bubble{flex:1;line-height:1.65;font-size:15px;color:var(--text);padding-top:2px;}
+.msg .bubble p{margin:0 0 10px;}
+.msg .bubble p:last-child{margin-bottom:0;}
+.msg .bubble pre{
+  background:#120C22;border:1px solid var(--line);border-radius:8px;padding:12px 14px;
+  overflow-x:auto;font-family:var(--font-mono);font-size:12.5px;color:#D9CBF2;
+}
+.msg .bubble code{font-family:var(--font-mono);background:#120C22;padding:1px 5px;border-radius:4px;font-size:.9em;color:#D9CBF2;}
+.msg .attach-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:8px;}
+.msg .attach-chip{
+  display:flex;align-items:center;gap:6px;background:var(--panel-2);border:1px solid var(--line);
+  border-radius:8px;padding:5px 9px;font-size:11.5px;color:var(--muted);font-family:var(--font-mono);
+}
+.msg .attach-img{max-width:220px;border-radius:8px;border:1px solid var(--line);display:block;margin-bottom:8px;}
+.typing{display:inline-flex;gap:4px;padding:4px 0;}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--amber-dim);animation:blink 1.2s infinite;}
+.typing span:nth-child(2){animation-delay:.2s}
+.typing span:nth-child(3){animation-delay:.4s}
+@keyframes blink{0%,80%,100%{opacity:.25}40%{opacity:1}}
+
+/* EMPTY STATE */
+.empty-state{
+  max-width:600px;margin:8vh auto 0;text-align:center;padding:0 20px;
+}
+.empty-state .glyph{
+  width:52px;height:52px;margin:0 auto 18px;border-radius:12px;
+  background:linear-gradient(135deg,var(--rust),var(--brass));
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--font-display);font-weight:700;font-size:22px;color:#1A1430;
+}
+.empty-state h1{font-family:var(--font-display);font-weight:600;font-size:26px;color:var(--text);margin:0 0 8px;}
+.empty-state p{color:var(--muted);font-size:14px;margin:0 0 26px;}
+.suggest-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.suggest-card{
+  text-align:left;background:var(--panel);border:1px solid var(--line);border-radius:10px;
+  padding:12px 14px;cursor:pointer;font-size:13px;color:var(--muted);transition:.15s;
+}
+.suggest-card:hover{border-color:var(--brass);color:var(--text);background:var(--panel-2);}
+
+/* COMPOSER */
+#composer-wrap{padding:12px 24px 20px;}
+#composer{
+  max-width:760px;margin:0 auto;
+  background:var(--panel);border:1px solid var(--line);border-radius:16px;
+  padding:10px 10px 8px;
+}
+#attach-preview{display:flex;gap:8px;flex-wrap:wrap;padding:2px 6px 8px;}
+.att-thumb{
+  position:relative;width:52px;height:52px;border-radius:8px;overflow:hidden;
+  border:1px solid var(--line);background:var(--panel-2);
+  display:flex;align-items:center;justify-content:center;font-size:10px;color:var(--muted);
+  font-family:var(--font-mono);text-align:center;
+}
+.att-thumb img{width:100%;height:100%;object-fit:cover;}
+.att-thumb .rm{
+  position:absolute;top:1px;right:1px;background:rgba(0,0,0,.6);color:#fff;
+  width:15px;height:15px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:10px;cursor:pointer;
+}
+#composer textarea{
+  width:100%;background:transparent;border:none;outline:none;resize:none;
+  color:var(--text);font-family:var(--font-body);font-size:14.5px;line-height:1.5;
+  padding:8px 6px;max-height:180px;
+}
+#composer textarea::placeholder{color:var(--muted-2);}
+.composer-toolbar{display:flex;align-items:center;justify-content:space-between;padding:0 4px;}
+.tool-left{display:flex;align-items:center;gap:4px;}
+.icon-btn{
+  width:32px;height:32px;border-radius:8px;background:transparent;border:none;color:var(--muted);
+  cursor:pointer;display:flex;align-items:center;justify-content:center;transition:.15s;
+}
+.icon-btn:hover{background:var(--panel-2);color:var(--amber);}
+#send-btn{
+  width:32px;height:32px;border-radius:8px;border:none;cursor:pointer;
+  background:linear-gradient(135deg,var(--rust),var(--brass));color:#1A1430;
+  display:flex;align-items:center;justify-content:center;
+  opacity:.4;pointer-events:none;transition:.15s;
+}
+#send-btn.active{opacity:1;pointer-events:auto;}
+.hint{font-family:var(--font-mono);font-size:10.5px;color:var(--muted-2);text-align:center;margin-top:8px;}
+
+/* MODAL (settings) */
+.modal-bg{
+  position:fixed;inset:0;background:rgba(10,8,5,.7);backdrop-filter:blur(3px);
+  display:none;align-items:center;justify-content:center;z-index:200;
+}
+.modal-bg.show{display:flex;}
+.modal{
+  width:420px;max-width:92vw;background:var(--panel);border:1px solid var(--line);
+  border-radius:14px;padding:22px;max-height:85vh;overflow-y:auto;
+}
+.modal h2{font-family:var(--font-display);font-size:19px;margin:0 0 4px;color:var(--amber);}
+.modal .desc{color:var(--muted);font-size:12.5px;margin:0 0 18px;}
+.field{margin-bottom:16px;}
+.field label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px;font-family:var(--font-mono);letter-spacing:.3px;}
+.field input[type=text],.field input[type=password],.field select{
+  width:100%;background:var(--bg);border:1px solid var(--line);border-radius:8px;
+  padding:9px 11px;color:var(--text);font-family:var(--font-mono);font-size:12.5px;outline:none;
+}
+.field input:focus,.field select:focus{border-color:var(--brass);}
+.lang-row{display:flex;gap:8px;}
+.lang-opt{
+  flex:1;text-align:center;padding:9px 4px;border-radius:8px;border:1px solid var(--line);
+  cursor:pointer;font-size:12.5px;color:var(--muted);
+}
+.lang-opt.active{border-color:var(--brass);color:var(--amber);background:#2A2050;}
+.modal-actions{display:flex;gap:10px;margin-top:20px;}
+.btn{
+  flex:1;padding:10px;border-radius:8px;border:1px solid var(--line);cursor:pointer;
+  font-family:var(--font-body);font-weight:600;font-size:13px;background:transparent;color:var(--muted);
+}
+.btn.primary{background:linear-gradient(135deg,var(--rust),var(--brass));color:#1A1430;border:none;}
+.btn:hover{filter:brightness(1.1);}
+.note{font-size:11px;color:var(--muted-2);margin-top:14px;line-height:1.5;}
+.note a{color:var(--amber-dim);}
+
+/* CAMERA MODAL */
+#camera-modal video, #camera-modal canvas{width:100%;border-radius:10px;background:#000;}
+#camera-modal{display:none;position:fixed;inset:0;z-index:250;background:rgba(10,8,5,.85);align-items:center;justify-content:center;}
+#camera-modal.show{display:flex;}
+.cam-box{width:420px;max-width:92vw;background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:16px;}
+.cam-actions{display:flex;gap:10px;margin-top:12px;}
+
+@media(max-width:760px){
+  #app{grid-template-columns:1fr;}
+  #sidebar{position:fixed;left:0;top:44px;bottom:0;width:250px;z-index:150;transform:translateX(-100%);transition:.25s;}
+  #sidebar.open{transform:translateX(0);}
+  .suggest-grid{grid-template-columns:1fr;}
+}
+</style>
+</head>
+<body>
+
+<div id="boot">
+  <div class="mark">MATHI <span style="color:var(--rust)">OS</span></div>
+  <div class="sub" id="boot-sub">initializing</div>
+  <div id="bootlines">
+    <div class="line">loading neural core...</div>
+  </div>
+  <div class="bar"><i></i></div>
+</div>
+
+<div id="lock-screen">
+  <div class="lock-box">
+    <div class="lock-glyph">M</div>
+    <h2 id="lock-title">MATHI OS</h2>
+    <p id="lock-sub" class="lock-sub">Password podunga</p>
+    <input type="password" id="lock-input" placeholder="••••••" autocomplete="off">
+    <button class="btn primary" id="lock-submit" style="width:100%;margin-top:12px;">Unlock</button>
+    <p id="lock-error" class="lock-error"></p>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="brand">
+      <button class="icon-btn" id="menu-toggle" style="display:none;color:var(--amber)">☰</button>
+      <span>MATHI OS</span>
+      <span class="dot" id="status-dot"></span>
+    </div>
+    <div class="right">
+      <span id="model-label">claude-sonnet-5</span>
+      <span id="clock">--:--</span>
+    </div>
+  </div>
+
+  <div id="sidebar">
+    <button class="new-chat-btn" id="new-chat-btn">＋ <span id="lbl-newchat">Puthu Chat</span></button>
+    <div class="sidebar-label" id="lbl-recent">Recent</div>
+    <div id="chat-list"></div>
+    <div class="sidebar-bottom">
+      <button class="side-btn" id="open-settings">⚙ <span id="lbl-settings">Settings</span></button>
+      <button class="side-btn" id="clear-all">🗑 <span id="lbl-clearall">Clear all chats</span></button>
+    </div>
+  </div>
+
+  <div id="main">
+    <div id="messages">
+      <div class="empty-state" id="empty-state">
+        <div class="glyph">M</div>
+        <h1 id="empty-title">Vanakkam, Shanmathi 👋</h1>
+        <p id="empty-sub">Enna help pannanum? Type panunga, file podunga, illa camera use pannunga.</p>
+        <div class="suggest-grid" id="suggest-grid"></div>
+      </div>
+      <div id="msg-list"></div>
+    </div>
+
+    <div id="composer-wrap">
+      <div id="composer">
+        <div id="attach-preview"></div>
+        <textarea id="input-box" rows="1" placeholder="Message MATHI OS..."></textarea>
+        <div class="composer-toolbar">
+          <div class="tool-left">
+            <button class="icon-btn" id="attach-btn" title="Attach files">📎</button>
+            <button class="icon-btn" id="camera-btn" title="Camera">📷</button>
+          </div>
+          <button id="send-btn">➤</button>
+        </div>
+      </div>
+      <div class="hint" id="hint-text">MATHI OS · your project, your key, your limits</div>
+    </div>
+  </div>
+</div>
+
+<input type="file" id="file-input" multiple style="display:none" accept="image/*,application/pdf,.doc,.docx,.txt,.csv,.md,.json">
+
+<!-- SETTINGS MODAL -->
+<div class="modal-bg" id="settings-modal">
+  <div class="modal">
+    <h2 id="s-title">Settings</h2>
+    <p class="desc" id="s-desc">Intha device-la app open panna oru password set pannunga. Unga Anthropic API key mathi_os.html file-lea irukkum, ivide illa.</p>
+
+    <div class="field">
+      <label id="lbl-password">YOUR PERSONAL PASSWORD</label>
+      <input type="password" id="personal-pass-input" placeholder="Set a simple password" autocomplete="new-password">
+      <p class="note" id="pass-note" style="margin-top:6px;">Idha type panna dhan app open aagum, aprm ovvoru time-um API key type panna vendaam.</p>
+    </div>
+
+    <div class="field">
+      <label id="lbl-model">MODEL</label>
+      <select id="model-select">
+        <option value="claude-sonnet-5">Claude Sonnet 5 (balanced)</option>
+        <option value="claude-opus-4-8">Claude Opus 4.8 (most capable)</option>
+        <option value="claude-haiku-4-5-20251001">Claude Haiku 4.5 (fastest)</option>
+      </select>
+    </div>
+
+    <div class="field">
+      <label id="lbl-lang">LANGUAGE / மொழி</label>
+      <div class="lang-row">
+        <div class="lang-opt" data-lang="ta">தமிழ்</div>
+        <div class="lang-opt" data-lang="en">English</div>
+        <div class="lang-opt active" data-lang="tg">Thanglish</div>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn" id="settings-cancel">Cancel</button>
+      <button class="btn primary" id="settings-save">Save</button>
+    </div>
+    <p class="note" id="s-note">Note: intha app-oda "limit" nu onnum illa — API call apdiye unga key-ku poidum, so unga Anthropic account plan/rate-limit dhaan apply aagum, ithu correct-a sollanumnu nenachen.</p>
+  </div>
+</div>
+
+<!-- CAMERA MODAL -->
+<div id="camera-modal">
+  <div class="cam-box">
+    <video id="cam-video" autoplay playsinline></video>
+    <canvas id="cam-canvas" style="display:none"></canvas>
+    <div class="cam-actions">
+      <button class="btn" id="cam-cancel">Cancel</button>
+      <button class="btn primary" id="cam-capture">📸 Capture</button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ================= YOUR API KEY (edit this once, before hosting) ================= */
+// Paste your real Anthropic API key between the quotes below.
+// This file is meant for PRIVATE hosting only (private repo / private Netlify site) —
+// if this page is public, anyone who views the page source can see this key.
+const EMBEDDED_API_KEY = "PASTE_YOUR_ANTHROPIC_API_KEY_HERE";
+
+/* ================= STATE ================= */
+const STORE_KEY_MODEL = 'mathi_os_model';
+const STORE_KEY_LANG = 'mathi_os_lang';
+const STORE_KEY_CHATS = 'mathi_os_chats';
+const STORE_KEY_PASSHASH = 'mathi_os_pass_hash';
+
+let state = {
+  model: localStorage.getItem(STORE_KEY_MODEL) || 'claude-sonnet-5',
+  lang: localStorage.getItem(STORE_KEY_LANG) || 'tg',
+  chats: JSON.parse(localStorage.getItem(STORE_KEY_CHATS) || '{}'),
+  passHash: localStorage.getItem(STORE_KEY_PASSHASH) || '',
+  activeChatId: null,
+  pendingAttachments: [],
+  streaming: false
+};
+function hasApiKey(){
+  return EMBEDDED_API_KEY && EMBEDDED_API_KEY !== 'PASTE_YOUR_ANTHROPIC_API_KEY_HERE';
+}
+
+async function hashText(str){
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('');
+}
+
+/* ================= I18N ================= */
+const STR = {
+  en: {
+    newchat:'New chat', recent:'Recent', settings:'Settings', clearall:'Clear all chats',
+    emptyTitle:'Hello, Shanmathi 👋', emptySub:'What can I help with? Type, attach a file, or use the camera.',
+    hint:'MATHI OS · your project, your key, your limits',
+    s_title:'Settings', s_desc:'Set a password to open the app on this device. Your Anthropic API key lives directly in the mathi_os.html file, not here.',
+    lbl_apikey:'ANTHROPIC API KEY', lbl_model:'MODEL', lbl_lang:'LANGUAGE',
+    s_note:'Note: this app has no built-in limit — every request goes straight to the API key embedded in the file, so your Anthropic account\'s plan and rate limits apply, and nothing added by this app.',
+    placeholder:'Message MATHI OS...', needKey:'No API key found — open mathi_os.html in a text editor and paste your Anthropic key into EMBEDDED_API_KEY near the top of the script.',
+    suggestions:['Explain a concept simply','Summarize this document','Write / debug some code','Brainstorm project ideas'],
+    lbl_password:'YOUR PERSONAL PASSWORD', pass_note:'Enter this to open the app — you won\'t need to type the API key again after this.',
+    lock_sub:'Enter your password', lock_wrong:'Wrong password, try again.',
+    needPasswordFirst:'Please set a personal password.'
+  },
+  ta: {
+    newchat:'புதிய அரட்டை', recent:'சமீபத்தியவை', settings:'அமைப்புகள்', clearall:'எல்லா அரட்டைகளையும் அழி',
+    emptyTitle:'வணக்கம், சண்முகி 👋', emptySub:'எதற்கு உதவி வேண்டும்? டைப் செய்யுங்கள், கோப்பு இணைக்கலாம், கேமராவும் பயன்படுத்தலாம்.',
+    hint:'MATHI OS · உங்க project, உங்க key, உங்க limit',
+    s_title:'அமைப்புகள்', s_desc:'இந்த device-ல app open பண்ண ஒரு password set பண்ணுங்க. உங்கள் Anthropic API key mathi_os.html file-லேயே இருக்கும், இங்கே இல்லை.',
+    lbl_apikey:'API KEY', lbl_model:'மாடல்', lbl_lang:'மொழி',
+    s_note:'குறிப்பு: இந்த app-ல் தனியாக எந்த limit-உம் இல்லை — file-ல் embed செய்யப்பட்ட key-க்கே நேரடியாக request போகும், உங்க Anthropic plan/limit தான் அப்ளை ஆகும்.',
+    placeholder:'MATHI OS-க்கு மெசேஜ் அனுப்பவும்...', needKey:'API key இல்லை — mathi_os.html file-ஐ text editor-ல திறந்து, script தொடக்கத்தில் EMBEDDED_API_KEY-ல உங்கள் key-ஐ paste செய்யுங்கள்.',
+    suggestions:['ஒரு விஷயத்தை எளிதா சொல்லு','இந்த document-ஐ சுருக்கமா சொல்லு','கோட் எழுது / debug பண்ணு','project ideas யோசி'],
+    lbl_password:'உங்கள் தனிப்பட்ட கடவுச்சொல்', pass_note:'இதை type செய்தால் app open ஆகும் — இதற்குப் பிறகு API key மீண்டும் தேவையில்லை.',
+    lock_sub:'கடவுச்சொல்லை உள்ளிடவும்', lock_wrong:'தவறான கடவுச்சொல், மீண்டும் முயற்சிக்கவும்.',
+    needPasswordFirst:'ஒரு தனிப்பட்ட கடவுச்சொல்லை அமைக்கவும்.'
+  },
+  tg: {
+    newchat:'Puthu Chat', recent:'Recent', settings:'Settings', clearall:'Ella chat-um clear pannu',
+    emptyTitle:'Vanakkam, Shanmathi 👋', emptySub:'Enna help pannanum? Type panunga, file podunga, illa camera use pannunga.',
+    hint:'MATHI OS · your project, your key, your limits',
+    s_title:'Settings', s_desc:'Intha device-la app open panna oru password set pannunga. Unga Anthropic API key mathi_os.html file-lea irukkum, ivide illa.',
+    lbl_apikey:'API KEY', lbl_model:'MODEL', lbl_lang:'LANGUAGE',
+    s_note:'Note: intha app-ku thaniya limit onnum illa — file-la irukura key-kku dhan nera request poidum, so unga Anthropic account plan/limit dhaan apply aagum.',
+    placeholder:'MATHI OS-ku message type pannunga...', needKey:'API key illa — mathi_os.html file-ஐ text editor-la open pannunga, script top-la EMBEDDED_API_KEY-la unga key paste pannunga.',
+    suggestions:['ஒரு concept easy-a explain pannu','Intha document summarize pannu','Code eழுது / debug pannu','Project ideas brainstorm pannu'],
+    lbl_password:'UNGA PERSONAL PASSWORD', pass_note:'Idha type panna dhan app open aagum, aprm ovvoru time-um API key type panna vendaam.',
+    lock_sub:'Password podunga', lock_wrong:'Password thappu, try pannunga.',
+    needPasswordFirst:'Oru personal password set pannunga.'
+  }
+};
+function t(key){ return (STR[state.lang] && STR[state.lang][key]) || STR.en[key]; }
+
+function applyLang(){
+  document.getElementById('lbl-newchat').textContent = t('newchat');
+  document.getElementById('lbl-recent').textContent = t('recent');
+  document.getElementById('lbl-settings').textContent = t('settings');
+  document.getElementById('lbl-clearall').textContent = t('clearall');
+  document.getElementById('empty-title').textContent = t('emptyTitle');
+  document.getElementById('empty-sub').textContent = t('emptySub');
+  document.getElementById('hint-text').textContent = t('hint');
+  document.getElementById('s-title').textContent = t('s_title');
+  document.getElementById('s-desc').textContent = t('s_desc');
+  document.getElementById('lbl-model').textContent = t('lbl_model');
+  document.getElementById('lbl-lang').textContent = t('lbl_lang');
+  document.getElementById('s-note').textContent = t('s_note');
+  document.getElementById('input-box').placeholder = t('placeholder');
+  document.getElementById('lbl-password').innerHTML = t('lbl_password');
+  document.getElementById('pass-note').textContent = t('pass_note');
+  document.getElementById('lock-sub').textContent = t('lock_sub');
+  renderSuggestions();
+  document.querySelectorAll('.lang-opt').forEach(el=>{
+    el.classList.toggle('active', el.dataset.lang === state.lang);
+  });
+}
+
+function renderSuggestions(){
+  const grid = document.getElementById('suggest-grid');
+  grid.innerHTML = '';
+  t('suggestions').forEach(s=>{
+    const d = document.createElement('div');
+    d.className = 'suggest-card';
+    d.textContent = s;
+    d.onclick = ()=>{ document.getElementById('input-box').value = s; document.getElementById('input-box').dispatchEvent(new Event('input')); document.getElementById('input-box').focus(); };
+    grid.appendChild(d);
+  });
+}
+
+/* ================= BOOT SEQUENCE ================= */
+window.addEventListener('load', ()=>{
+  setTimeout(()=>{
+    document.getElementById('boot').style.opacity = '0';
+    setTimeout(()=>{
+      document.getElementById('boot').style.display = 'none';
+      applyLang();
+      if(state.passHash){
+        document.getElementById('lock-screen').classList.add('show');
+        document.getElementById('lock-input').focus();
+      } else {
+        document.getElementById('app').classList.add('ready');
+        init();
+      }
+    }, 500);
+  }, 1500);
+});
+
+document.getElementById('lock-submit').onclick = unlockApp;
+document.getElementById('lock-input').addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter') unlockApp();
+});
+async function unlockApp(){
+  const val = document.getElementById('lock-input').value;
+  const hash = await hashText(val);
+  if(hash === state.passHash){
+    document.getElementById('lock-screen').classList.remove('show');
+    document.getElementById('app').classList.add('ready');
+    init();
+  } else {
+    document.getElementById('lock-error').textContent = t('lock_wrong');
+    const box = document.querySelector('.lock-box');
+    box.classList.remove('shake'); void box.offsetWidth; box.classList.add('shake');
+    document.getElementById('lock-input').value = '';
+    document.getElementById('lock-input').focus();
+  }
+}
+
+/* ================= CLOCK ================= */
+function tickClock(){
+  const d = new Date();
+  document.getElementById('clock').textContent = d.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+}
+setInterval(tickClock, 1000);
+
+/* ================= INIT ================= */
+function init(){
+  tickClock();
+  applyLang();
+  document.getElementById('model-select').value = state.model;
+  document.getElementById('model-label').textContent = state.model;
+  updateStatusDot();
+  renderChatList();
+
+  const ids = Object.keys(state.chats);
+  if(ids.length){ openChat(ids[ids.length-1]); }
+
+  if(!state.passHash){ openSettings(); }
+}
+
+function updateStatusDot(){
+  const dot = document.getElementById('status-dot');
+  dot.style.background = hasApiKey() ? 'var(--good)' : 'var(--danger)';
+  dot.style.boxShadow = hasApiKey() ? '0 0 6px var(--good)' : '0 0 6px var(--danger)';
+}
+
+/* ================= CHAT MANAGEMENT ================= */
+function saveChats(){ localStorage.setItem(STORE_KEY_CHATS, JSON.stringify(state.chats)); }
+
+function newChat(){
+  const id = 'c_' + Date.now();
+  state.chats[id] = { id, title:null, messages:[], created: Date.now() };
+  saveChats();
+  openChat(id);
+  renderChatList();
+}
+
+function openChat(id){
+  state.activeChatId = id;
+  renderChatList();
+  renderMessages();
+  document.getElementById('sidebar').classList.remove('open');
+}
+
+function deleteChat(id, ev){
+  ev.stopPropagation();
+  delete state.chats[id];
+  saveChats();
+  if(state.activeChatId === id){ state.activeChatId = null; }
+  renderChatList();
+  renderMessages();
+}
+
+function renderChatList(){
+  const list = document.getElementById('chat-list');
+  list.innerHTML = '';
+  const ids = Object.keys(state.chats).sort((a,b)=> state.chats[b].created - state.chats[a].created);
+  ids.forEach(id=>{
+    const c = state.chats[id];
+    const div = document.createElement('div');
+    div.className = 'chat-item' + (id === state.activeChatId ? ' active' : '');
+    div.innerHTML = `<span>${escapeHtml(c.title || (c.messages[0] ? c.messages[0].text.slice(0,28) : 'New chat'))}</span><span class="del">✕</span>`;
+    div.onclick = ()=> openChat(id);
+    div.querySelector('.del').onclick = (e)=> deleteChat(id, e);
+    list.appendChild(div);
+  });
+}
+
+document.getElementById('clear-all').onclick = ()=>{
+  if(confirm('Delete all chats?')){
+    state.chats = {};
+    state.activeChatId = null;
+    saveChats();
+    renderChatList();
+    renderMessages();
+  }
+};
+
+/* ================= MESSAGE RENDERING ================= */
+function escapeHtml(s){
+  return (s||'').replace(/[&<>"']/g, m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+}
+
+function simpleMarkdown(text){
+  let html = escapeHtml(text);
+  html = html.replace(/```([\s\S]*?)```/g, (m,code)=> `<pre>${code.replace(/^\w*\n/,'')}</pre>`);
+  html = html.replace(/`([^`]+)`/g, '<code>$1</code>');
+  html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+  html = html.replace(/\n\n/g, '</p><p>');
+  html = html.replace(/\n/g, '<br>');
+  return '<p>' + html + '</p>';
+}
+
+function renderMessages(){
+  const listEl = document.getElementById('msg-list');
+  const emptyEl = document.getElementById('empty-state');
+  listEl.innerHTML = '';
+  const chat = state.chats[state.activeChatId];
+  if(!chat || chat.messages.length === 0){
+    emptyEl.style.display = 'block';
+    return;
+  }
+  emptyEl.style.display = 'none';
+  chat.messages.forEach(m=>{
+    const wrap = document.createElement('div');
+    wrap.className = 'msg-wrap';
+    const row = document.createElement('div');
+    row.className = 'msg ' + (m.role === 'user' ? 'user' : 'ai');
+    const avatar = document.createElement('div');
+    avatar.className = 'avatar';
+    avatar.textContent = m.role === 'user' ? 'S' : 'M';
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+
+    if(m.attachments && m.attachments.length){
+      const attachRow = document.createElement('div');
+      attachRow.className = 'attach-row';
+      m.attachments.forEach(a=>{
+        if(a.kind === 'image'){
+          const img = document.createElement('img');
+          img.className = 'attach-img';
+          img.src = a.dataUrl;
+          bubble.appendChild(img);
+        } else {
+          const chip = document.createElement('div');
+          chip.className = 'attach-chip';
+          chip.textContent = '📄 ' + a.name;
+          attachRow.appendChild(chip);
+        }
+      });
+      if(attachRow.children.length) bubble.appendChild(attachRow);
+    }
+
+    const textDiv = document.createElement('div');
+    textDiv.innerHTML = simpleMarkdown(m.text || '');
+    bubble.appendChild(textDiv);
+
+    row.appendChild(avatar);
+    row.appendChild(bubble);
+    wrap.appendChild(row);
+    listEl.appendChild(wrap);
+  });
+  document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+}
+
+/* ================= ATTACHMENTS ================= */
+document.getElementById('attach-btn').onclick = ()=> document.getElementById('file-input').click();
+
+document.getElementById('file-input').onchange = async (e)=>{
+  const files = Array.from(e.target.files);
+  for(const f of files){
+    await addAttachment(f);
+  }
+  e.target.value = '';
+};
+
+function fileToBase64(file){
+  return new Promise((res,rej)=>{
+    const r = new FileReader();
+    r.onload = ()=> res(r.result.split(',')[1]);
+    r.onerror = rej;
+    r.readAsDataURL(file);
+  });
+}
+
+async function addAttachment(file){
+  const isImage = file.type.startsWith('image/');
+  const isPdf = file.type === 'application/pdf';
+  const base64 = await fileToBase64(file);
+  const att = {
+    kind: isImage ? 'image' : (isPdf ? 'pdf' : 'text'),
+    name: file.name,
+    mediaType: file.type || 'application/octet-stream',
+    base64,
+    dataUrl: isImage ? `data:${file.type};base64,${base64}` : null
+  };
+  if(!isImage && !isPdf){
+    // best-effort text read for plain text-like files
+    try{ att.textContent = await file.text(); }catch(e){}
+  }
+  state.pendingAttachments.push(att);
+  renderAttachPreview();
+}
+
+function renderAttachPreview(){
+  const wrap = document.getElementById('attach-preview');
+  wrap.innerHTML = '';
+  state.pendingAttachments.forEach((a, idx)=>{
+    const thumb = document.createElement('div');
+    thumb.className = 'att-thumb';
+    if(a.kind === 'image'){
+      const img = document.createElement('img'); img.src = a.dataUrl; thumb.appendChild(img);
+    } else {
+      thumb.textContent = a.name.slice(0,10);
+    }
+    const rm = document.createElement('div');
+    rm.className = 'rm'; rm.textContent = '✕';
+    rm.onclick = ()=>{ state.pendingAttachments.splice(idx,1); renderAttachPreview(); };
+    thumb.appendChild(rm);
+    wrap.appendChild(thumb);
+  });
+}
+
+/* ================= CAMERA ================= */
+let camStream = null;
+document.getElementById('camera-btn').onclick = async ()=>{
+  try{
+    camStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode:'user' } });
+    document.getElementById('cam-video').srcObject = camStream;
+    document.getElementById('camera-modal').classList.add('show');
+  }catch(err){
+    alert('Camera access failed: ' + err.message);
+  }
+};
+document.getElementById('cam-cancel').onclick = closeCamera;
+function closeCamera(){
+  if(camStream){ camStream.getTracks().forEach(t=>t.stop()); camStream = null; }
+  document.getElementById('camera-modal').classList.remove('show');
+}
+document.getElementById('cam-capture').onclick = ()=>{
+  const video = document.getElementById('cam-video');
+  const canvas = document.getElementById('cam-canvas');
+  canvas.width = video.videoWidth; canvas.height = video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+  const base64 = dataUrl.split(',')[1];
+  state.pendingAttachments.push({ kind:'image', name:'camera.jpg', mediaType:'image/jpeg', base64, dataUrl });
+  renderAttachPreview();
+  closeCamera();
+};
+
+/* ================= COMPOSER ================= */
+const inputBox = document.getElementById('input-box');
+const sendBtn = document.getElementById('send-btn');
+
+inputBox.addEventListener('input', ()=>{
+  inputBox.style.height = 'auto';
+  inputBox.style.height = Math.min(inputBox.scrollHeight, 180) + 'px';
+  sendBtn.classList.toggle('active', inputBox.value.trim().length > 0 || state.pendingAttachments.length > 0);
+});
+inputBox.addEventListener('keydown', (e)=>{
+  if(e.key === 'Enter' && !e.shiftKey){
+    e.preventDefault();
+    sendMessage();
+  }
+});
+sendBtn.onclick = sendMessage;
+
+async function sendMessage(){
+  const text = inputBox.value.trim();
+  if(!text && state.pendingAttachments.length === 0) return;
+  if(!hasApiKey()){ alert(t('needKey')); return; }
+  if(state.streaming) return;
+
+  if(!state.activeChatId){ newChat(); }
+  const chat = state.chats[state.activeChatId];
+  if(!chat.title && text){ chat.title = text.slice(0,40); }
+
+  const userMsg = { role:'user', text, attachments: state.pendingAttachments.slice() };
+  chat.messages.push(userMsg);
+  const attachmentsForApi = state.pendingAttachments.slice();
+  state.pendingAttachments = [];
+  renderAttachPreview();
+  inputBox.value = ''; inputBox.style.height='auto';
+  sendBtn.classList.remove('active');
+  saveChats(); renderChatList(); renderMessages();
+
+  // typing indicator
+  state.streaming = true;
+  const listEl = document.getElementById('msg-list');
+  const typingWrap = document.createElement('div');
+  typingWrap.className = 'msg-wrap'; typingWrap.id = 'typing-indicator';
+  typingWrap.innerHTML = `<div class="msg ai"><div class="avatar">M</div><div class="bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
+  listEl.appendChild(typingWrap);
+  document.getElementById('messages').scrollTop = document.getElementById('messages').scrollHeight;
+
+  try{
+    const reply = await callClaude(chat.messages, attachmentsForApi);
+    chat.messages.push({ role:'assistant', text: reply });
+  }catch(err){
+    chat.messages.push({ role:'assistant', text: '⚠️ Error: ' + err.message });
+  }
+  state.streaming = false;
+  document.getElementById('typing-indicator')?.remove();
+  saveChats();
+  renderMessages();
+}
+
+async function callClaude(messages, latestAttachments){
+  const apiMessages = messages.map((m, idx)=>{
+    const isLast = idx === messages.length - 1;
+    if(m.role === 'user' && isLast && latestAttachments && latestAttachments.length){
+      const content = [];
+      latestAttachments.forEach(a=>{
+        if(a.kind === 'image'){
+          content.push({ type:'image', source:{ type:'base64', media_type: a.mediaType, data: a.base64 } });
+        } else if(a.kind === 'pdf'){
+          content.push({ type:'document', source:{ type:'base64', media_type: 'application/pdf', data: a.base64 } });
+        } else if(a.textContent){
+          content.push({ type:'text', text: `[Attached file: ${a.name}]\n${a.textContent}` });
+        }
+      });
+      content.push({ type:'text', text: m.text || '(see attached)' });
+      return { role:'user', content };
+    }
+    return { role: m.role === 'assistant' ? 'assistant' : 'user', content: m.text };
+  });
+
+  const langNote = state.lang === 'ta' ? 'Reply in Tamil script unless the user writes in English.' :
+                    state.lang === 'en' ? 'Reply in English.' :
+                    'Reply in natural Thanglish (Tamil mixed with English, Latin script) matching the user\'s style, unless they clearly want plain English or Tamil script.';
+
+  const res = await fetch('https://api.anthropic.com/v1/messages', {
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'x-api-key': EMBEDDED_API_KEY,
+      'anthropic-version':'2023-06-01',
+      'anthropic-dangerous-direct-browser-access':'true'
+    },
+    body: JSON.stringify({
+      model: state.model,
+      max_tokens: 2048,
+      system: `You are MATHI, a helpful multilingual assistant inside MATHI OS, a personal project built by Shanmathi. ${langNote}`,
+      messages: apiMessages
+    })
+  });
+
+  if(!res.ok){
+    const errBody = await res.json().catch(()=>({}));
+    throw new Error(errBody?.error?.message || `HTTP ${res.status}`);
+  }
+  const data = await res.json();
+  const textBlocks = (data.content || []).filter(b=>b.type==='text').map(b=>b.text);
+  return textBlocks.join('\n\n') || '(no response)';
+}
+
+/* ================= SETTINGS MODAL ================= */
+function openSettings(){ document.getElementById('settings-modal').classList.add('show'); }
+function closeSettings(){ document.getElementById('settings-modal').classList.remove('show'); }
+document.getElementById('open-settings').onclick = openSettings;
+document.getElementById('settings-cancel').onclick = closeSettings;
+document.getElementById('settings-modal').addEventListener('click', (e)=>{
+  if(e.target.id === 'settings-modal') closeSettings();
+});
+
+document.querySelectorAll('.lang-opt').forEach(el=>{
+  el.onclick = ()=>{
+    document.querySelectorAll('.lang-opt').forEach(x=>x.classList.remove('active'));
+    el.classList.add('active');
+  };
+});
+
+document.getElementById('settings-save').onclick = async ()=>{
+  const newPass = document.getElementById('personal-pass-input').value;
+
+  if(!state.passHash && !newPass){
+    alert(t('needPasswordFirst')); return;
+  }
+  if(newPass){ state.passHash = await hashText(newPass); localStorage.setItem(STORE_KEY_PASSHASH, state.passHash); }
+
+  state.model = document.getElementById('model-select').value;
+  const activeLang = document.querySelector('.lang-opt.active');
+  state.lang = activeLang ? activeLang.dataset.lang : 'tg';
+
+  localStorage.setItem(STORE_KEY_MODEL, state.model);
+  localStorage.setItem(STORE_KEY_LANG, state.lang);
+
+  document.getElementById('model-label').textContent = state.model;
+  document.getElementById('personal-pass-input').value = '';
+  updateStatusDot();
+  applyLang();
+  closeSettings();
+};
+
+/* ================= NEW CHAT / MOBILE MENU ================= */
+document.getElementById('new-chat-btn').onclick = newChat;
+
+if(window.innerWidth <= 760){
+  document.getElementById('menu-toggle').style.display = 'flex';
+  document.getElementById('menu-toggle').onclick = ()=>{
+    document.getElementById('sidebar').classList.toggle('open');
+  };
+}
+</script>
+</body>
+</html>
