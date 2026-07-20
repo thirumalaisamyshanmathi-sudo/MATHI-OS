@@ -442,11 +442,15 @@ const STORE_KEY_LANG = 'mathi_os_lang';
 const STORE_KEY_CHATS = 'mathi_os_chats';
 const STORE_KEY_PASSHASH = 'mathi_os_pass_hash';
 
+// Default personal password is pre-set below (SHA-256 hash, not plain text).
+// Can be changed anytime from Settings inside the app.
+const DEFAULT_PASS_HASH = "739f4b1e435cbf6fdbcacc3c6059a0dd01dd8d455c48ade75a8d4e4ae36e19c3";
+
 let state = {
   model: localStorage.getItem(STORE_KEY_MODEL) || 'claude-sonnet-5',
   lang: localStorage.getItem(STORE_KEY_LANG) || 'tg',
   chats: JSON.parse(localStorage.getItem(STORE_KEY_CHATS) || '{}'),
-  passHash: localStorage.getItem(STORE_KEY_PASSHASH) || '',
+  passHash: localStorage.getItem(STORE_KEY_PASSHASH) || DEFAULT_PASS_HASH,
   activeChatId: null,
   pendingAttachments: [],
   streaming: false
